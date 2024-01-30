@@ -1,0 +1,43 @@
+---
+- name: copy wireguard config wg1
+  ansible.builtin.template:
+    src: server/wg1.conf.j2
+    dest: /etc/wireguard/wg1.conf
+    mode: 0644
+  notify:
+    - restart wireguard wg1
+
+- name: enable and start wireguard service wg1
+  ansible.builtin.systemd:
+    name: wg-quick@wg1.service
+    enabled: yes
+    state: started
+
+- name: ufw allow wireguard wg1
+  community.general.ufw:
+    rule: allow
+    port: 51821
+    proto: udp
+
+- name: copy wireguard config wg2
+  ansible.builtin.template:
+    src: server/wg2.conf.j2
+    dest: /etc/wireguard/wg2.conf
+    mode: 0644
+  notify:
+    - restart wireguard wg2
+
+- name: enable and start wireguard service wg2
+  ansible.builtin.systemd:
+    name: wg-quick@wg2.service
+    enabled: yes
+    state: started
+
+- name: ufw allow wireguard wg2
+  community.general.ufw:
+    rule: allow
+    port: 51822
+    proto: udp
+
+# flush handlers to start triggered handlers before next task is executed
+- meta: flush_handlers

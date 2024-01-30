@@ -1,0 +1,10 @@
+[Interface]
+PrivateKey = 6C3+pAzyE89ZvMH4h2Zwbhdiw5uA7UVvE/sCjlexpmU=
+Address = 10.2.0.2/32
+DNS = 1.1.1.1,1.0.0.1
+
+[Peer]
+PublicKey = KlmzJ1of08jkEuEWx/OR8AJV1pysGp+kTC4Xx83+fCY=
+Endpoint = {{ groups['servers'].1 }}:51822
+AllowedIPs = 10.2.0.1/32
+PersistentKeepalive = 21

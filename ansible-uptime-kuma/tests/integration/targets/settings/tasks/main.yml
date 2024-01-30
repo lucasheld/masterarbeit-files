@@ -1,0 +1,8 @@
+- name: Enable beta version update check
+  lucasheld.uptime_kuma.settings:
+    api_url: http://127.0.0.1:3001
+    api_username: admin
+    api_password: secret123
+    api_timeout: 1
+    api_wait_events: 0.01
+    checkBeta: true

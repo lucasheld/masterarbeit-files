@@ -1,0 +1,18 @@
+× chaosd.service - chaosd
+     Loaded: loaded (/etc/systemd/system/chaosd.service; enabled; preset: enabled)
+     Active: failed (Result: oom-kill) since Thu 2023-09-21 06:12:23 UTC; 4h 55min ago
+   Duration: 20h 28min 363ms
+    Process: 834 ExecStart=/usr/local/chaosd-latest-linux-amd64/chaosd server --https-port 31768 --CA=/etc/chaosd/pki/ca.crt --cert=/etc/chaosd/pki/chaosd.crt --key=/etc/chaosd/pki/chaosd.key (code=exited, status=0/SUCCESS)
+   Main PID: 834 (code=exited, status=0/SUCCESS)
+        CPU: 30.821s
+
+Sep 21 05:52:19 wireguard-1 chaosd[834]: [2023/09/21 05:52:19.958 +00:00] [INFO] [stress.go:109] ["Start memStress process successfully"] [command="/usr/local/chaosd-latest-linux-amd64/tools/memStress --workers 1 --size 1600MB"] [Pid=419>
+Sep 21 05:52:19 wireguard-1 chaosd[834]: [GIN] 2023/09/21 - 05:52:19 | 200 |   31.537095ms |   46.142.84.227 | POST     "/api/attack/stress"
+Sep 21 06:02:19 wireguard-1 chaosd[834]: 2023-09-21T06:02:19.248Z        INFO        background-process-manager        bpm/bpm.go:247        process stopped        {"uid": "8b6ea78f-90b6-4b5d-ae37-7b898a506b0c", "pid": 41908}
+Sep 21 06:02:19 wireguard-1 chaosd[834]: [GIN] 2023/09/21 - 06:02:19 | 200 |    79.82012ms |   46.142.84.227 | DELETE   "/api/attack/46aa845d-32fa-4aee-a1e7-97e40a0eacb9"
+Sep 21 06:12:21 wireguard-1 chaosd[834]: [2023/09/21 06:12:21.528 +00:00] [INFO] [stress.go:88] ["stressors normalize"] [arguments=" --workers 1 --size 1800MB"]
+Sep 21 06:12:21 wireguard-1 chaosd[834]: [2023/09/21 06:12:21.541 +00:00] [INFO] [stress.go:109] ["Start memStress process successfully"] [command="/usr/local/chaosd-latest-linux-amd64/tools/memStress --workers 1 --size 1800MB"] [Pid=426>
+Sep 21 06:12:21 wireguard-1 chaosd[834]: [GIN] 2023/09/21 - 06:12:21 | 200 |   41.964614ms |   46.142.84.227 | POST     "/api/attack/stress"
+Sep 21 06:12:23 wireguard-1 systemd[1]: chaosd.service: A process of this unit has been killed by the OOM killer.
+Sep 21 06:12:23 wireguard-1 systemd[1]: chaosd.service: Failed with result 'oom-kill'.
+Sep 21 06:12:23 wireguard-1 systemd[1]: chaosd.service: Consumed 30.821s CPU time.

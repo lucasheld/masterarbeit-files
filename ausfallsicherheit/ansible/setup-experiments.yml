@@ -1,0 +1,86 @@
+---
+- hosts: controller
+  become: yes
+  tasks:
+    - name: Read controller ssh public key
+      ansible.builtin.slurp:
+        src: /root/.ssh/id_rsa.pub
+      register: ssh_pub_key
+    
+    - name: Decode ssh public key
+      set_fact:
+        ssh_pub_key_content: "{{ ssh_pub_key['content'] | b64decode }}"
+    
+    - name: Remove old server hosts from known_hosts
+      ansible.builtin.shell: "ssh-keygen -R {{item}}"
+      loop: "{{ groups['servers'] }}"
+    
+    - name: Add server hosts to known_hosts
+      lineinfile:
+        dest: ~/.ssh/known_hosts
+        create: yes
+        state: present
+        line: "{{ lookup('pipe', 'ssh-keyscan ' + item) }}"
+      loop: "{{ groups['servers'] }}"
+
+- hosts: servers
+  become: yes
+  tasks:
+    - name: Set authorized key
+      ansible.posix.authorized_key:
+        user: root
+        key: "{{ hostvars[groups['controller'].0].ssh_pub_key_content }}"
+        state: present
+
+- hosts: controller
+  become: yes
+  tasks:
+    - include_role:
+        name: docker
+      
+    - include_role:
+        name: chaosctl
+    
+    - include_role:
+        name: helm
+
+    - include_role:
+        name: minikube
+
+    - include_role:
+        name: chaos-mesh
+
+    # generate new certs every time
+    - name: Init server chaos nodes
+      ansible.builtin.shell: "chaosctl pm init node{{ item }}-{{ now().timestamp() | int }} --ip={{ item }}"
+      ignore_errors: yes
+      loop: "{{ groups['servers'] }}"
+    
+    - include_role:
+        name: grafana
+    
+    - include_role:
+        name: wireguard
+    
+    - include_role:
+        name: wireguard
+        tasks_from: controller
+
+- hosts: servers
+  become: yes
+  tasks:
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: prometheus_wireguard_exporter
+
+    - include_role:
+        name: chaosd
+
+    - include_role:
+        name: wireguard
+        tasks_from: server
+
+  roles:
+    - prometheus.prometheus.node_exporter

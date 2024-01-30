@@ -1,0 +1,15 @@
+---
+- name: restart wireguard wg0
+  ansible.builtin.systemd:
+    name: wg-quick@wg0.service
+    state: restarted
+
+- name: restart wireguard wg1
+  ansible.builtin.systemd:
+    name: wg-quick@wg1.service
+    state: restarted
+
+- name: restart wireguard wg2
+  ansible.builtin.systemd:
+    name: wg-quick@wg2.service
+    state: restarted

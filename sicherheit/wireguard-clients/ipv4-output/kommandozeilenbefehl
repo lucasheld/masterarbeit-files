@@ -1,0 +1,1 @@
+./fffuu --ipassmt ipassmt --chain OUTPUT iptables-save

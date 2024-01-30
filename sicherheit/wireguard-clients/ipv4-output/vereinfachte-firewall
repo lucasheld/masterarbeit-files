@@ -1,0 +1,8 @@
+target  prot       opt  source         destination
+ACCEPT  all        --   172.17.0.0/16  0.0.0.0/0
+ACCEPT  tcp        --   0.0.0.0/0      0.0.0.0/0  dports: 80
+ACCEPT  tcp        --   0.0.0.0/0      0.0.0.0/0  dports: 443
+ACCEPT  tcp        --   0.0.0.0/0      0.0.0.0/0  dports: 53
+ACCEPT  udp        --   0.0.0.0/0      0.0.0.0/0  dports: 53
+ACCEPT  ipv6-icmp  --   0.0.0.0/0      0.0.0.0/0
+ACCEPT  all        --   0.0.0.0/0      0.0.0.0/0

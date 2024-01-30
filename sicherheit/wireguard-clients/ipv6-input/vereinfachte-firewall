@@ -1,0 +1,21 @@
+target  prot       opt  source                     destination
+ACCEPT  tcp        --   fdc9:281f:4d7:9ee9::4/128  fdc9:281f:4d7:9ee9::2/128  dports: 80
+ACCEPT  tcp        --   fdc9:281f:4d7:9ee9::4/128  fdc9:281f:4d7:9ee9::2/128  dports: 443
+ACCEPT  tcp        --   fdc9:281f:4d7:9ee9::4/128  fdc9:281f:4d7:9ee9::3/128  dports: 53
+ACCEPT  udp        --   fdc9:281f:4d7:9ee9::4/128  fdc9:281f:4d7:9ee9::3/128  dports: 53
+ACCEPT  tcp        --   fdc9:281f:4d7:9ee9::5/128  fdc9:281f:4d7:9ee9::2/128  dports: 80
+ACCEPT  tcp        --   fdc9:281f:4d7:9ee9::5/128  fdc9:281f:4d7:9ee9::2/128  dports: 443
+ACCEPT  ipv6-icmp  --   fdc9:281f:4d7:9ee9::4/128  fdc9:281f:4d7:9ee9::/112
+ACCEPT  all        --   ::1/128                    ::/0
+ACCEPT  ipv6-icmp  --   ::/0                       ::/0
+ACCEPT  ipv6-icmp  --   fe80::/10                  ::/0
+ACCEPT  tcp        --   ::/0                       ::/0  dports: 22
+ACCEPT  udp        --   ::/0                       ::/0  dports: 51820
+ACCEPT  tcp        --   ::/0                       ::/0  dports: 80
+DROP    udp        --   ::/0                       ::/0  dports: 137
+DROP    udp        --   ::/0                       ::/0  dports: 138
+DROP    tcp        --   ::/0                       ::/0  dports: 139
+DROP    tcp        --   ::/0                       ::/0  dports: 445
+DROP    udp        --   ::/0                       ::/0  dports: 546
+DROP    udp        --   ::/0                       ::/0  dports: 547
+DROP    all        --   ::/0                       ::/0

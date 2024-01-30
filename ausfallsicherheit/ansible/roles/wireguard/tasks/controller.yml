@@ -1,0 +1,31 @@
+---
+- name: copy wireguard config wg1
+  ansible.builtin.template:
+    src: controller/wg1.conf.j2
+    dest: /etc/wireguard/wg1.conf
+    mode: 0644
+  notify:
+    - restart wireguard wg1
+
+- name: enable and start wireguard service wg1
+  ansible.builtin.systemd:
+    name: wg-quick@wg1.service
+    enabled: yes
+    state: started
+
+- name: copy wireguard config wg2
+  ansible.builtin.template:
+    src: controller/wg2.conf.j2
+    dest: /etc/wireguard/wg2.conf
+    mode: 0644
+  notify:
+    - restart wireguard wg2
+
+- name: enable and start wireguard service wg2
+  ansible.builtin.systemd:
+    name: wg-quick@wg2.service
+    enabled: yes
+    state: started
+
+# flush handlers to start triggered handlers before next task is executed
+- meta: flush_handlers

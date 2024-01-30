@@ -1,0 +1,12 @@
+[Unit]
+Description=minikube
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+ExecStart=minikube start --driver=docker --force
+ExecStop=minikube stop
+
+[Install]
+WantedBy=multi-user.target

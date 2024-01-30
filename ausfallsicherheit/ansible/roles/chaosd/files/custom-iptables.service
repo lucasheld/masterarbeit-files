@@ -1,0 +1,9 @@
+[Unit]
+Description=Custom iptables Rules
+
+[Service]
+ExecStart=/etc/iptables/custom-iptables-rules.sh
+Type=oneshot
+
+[Install]
+WantedBy=multi-user.target

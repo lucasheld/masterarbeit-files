@@ -1,0 +1,113 @@
+---
+- name: install uptime-kuma-api pip module
+  ansible.builtin.pip:
+    name: uptime-kuma-api
+    extra_args: --break-system-packages
+
+- name: uptime-kuma setup
+  lucasheld.uptime_kuma.setup:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_username: "{{ uptime_kuma.api_username }}"
+    api_password: "{{ uptime_kuma.api_password }}"
+
+- name: uptime kuma login
+  lucasheld.uptime_kuma.login:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_username: "{{ uptime_kuma.api_username }}"
+    api_password: "{{ uptime_kuma.api_password }}"
+  register: result
+
+- set_fact:
+    uptime_kuma_api_token: "{{ result.token }}"
+
+
+# add monitors for other servers
+
+- set_fact:
+    wireguard_server_ips: "{{ groups.servers | difference([inventory_hostname]) }}"
+
+- name: add monitors for other servers
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_token: "{{ uptime_kuma_api_token }}"
+    name: "Server {{ item }}"
+    type: http
+    url: "http://{{ item }}"
+    interval: 20
+    retryInterval: 20
+    state: present
+  loop: "{{ wireguard_server_ips }}"
+
+- set_fact:
+    uptime_kuma_monitor_server_names: "{{ wireguard_server_ips | map('regex_replace', '(.+)', 'Server \\1') }}"
+
+
+# add monitors for peers
+
+- set_fact:
+    wireguard_peers_ips: "{{ wireguard.peers | map(attribute='allowed_ips') | flatten | map('regex_replace', '/\\d+$', '') }}"
+
+- name: add monitors for wireguard peers
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_token: "{{ uptime_kuma_api_token }}"
+    name: "Peer {{ item }}"
+    type: ping
+    hostname: "{{ item }}"
+    interval: 20
+    retryInterval: 20
+    state: present
+  loop: "{{ wireguard_peers_ips }}"
+
+- set_fact:
+    uptime_kuma_monitor_peer_names: "{{ wireguard_peers_ips | map('regex_replace', '(.+)', 'Peer \\1') }}"
+
+
+# add monitors for services
+
+- name: generate wireguard peer firewall rules
+  script: generate_peer_services.py --interface '{{ wireguard.interface | to_json }}' --peers '{{ wireguard.peers | to_json }}'
+  register: result
+
+- name: set facts for generated firewall rules
+  set_fact:
+    wireguard_peer_services: "{{ result.stdout | from_json }}"
+
+- name: add monitors for wireguard peer services
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_token: "{{ uptime_kuma_api_token }}"
+    name: "Service {{ item.socket }}"
+    type: port
+    hostname: "{{ item.ip }}"
+    port: "{{ item.port }}"
+    interval: 20
+    retryInterval: 20
+    state: present
+  loop: "{{ wireguard_peer_services }}"
+
+- set_fact:
+    uptime_kuma_monitor_service_names: "{{ wireguard_peer_services | map(attribute='socket') | map('regex_replace', '(.+)', 'Service \\1') }}"
+
+
+# remove old monitors
+
+- name: get all monitors
+  lucasheld.uptime_kuma.monitor_info:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_token: "{{ uptime_kuma_api_token }}"
+  register: all_monitors
+
+- set_fact:
+    uptime_kuma_monitor_all_names: "{{ all_monitors['monitors'] | map(attribute='name') }}"
+
+- set_fact:
+    uptime_kuma_monitor_old_names: "{{ uptime_kuma_monitor_all_names | difference(uptime_kuma_monitor_server_names + uptime_kuma_monitor_peer_names + uptime_kuma_monitor_service_names) }}"
+
+- name: remove old monitors
+  lucasheld.uptime_kuma.monitor:
+    api_url: "{{ uptime_kuma.api_url }}"
+    api_token: "{{ uptime_kuma_api_token }}"
+    name: "{{ item }}"
+    state: absent
+  loop: "{{ uptime_kuma_monitor_old_names }}"

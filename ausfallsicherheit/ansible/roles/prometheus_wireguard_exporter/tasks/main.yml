@@ -1,0 +1,10 @@
+---
+- name: Start prometheus_wireguard_exporter docker container
+  community.docker.docker_container:
+    name: wgexporter
+    image: mindflavor/prometheus-wireguard-exporter
+    network_mode: host
+    capabilities:
+      - NET_ADMIN
+    command: "--prepend_sudo true"
+    restart_policy: always

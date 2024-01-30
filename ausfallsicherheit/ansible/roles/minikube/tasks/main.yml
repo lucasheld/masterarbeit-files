@@ -1,0 +1,25 @@
+---
+- name: install minikube
+  get_url:
+    url: "https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64"
+    dest: /usr/local/bin/minikube
+    mode: "+x"
+
+- name: Create kubectl symlink
+  ansible.builtin.file:
+    src: /usr/local/bin/minikube
+    dest: /usr/local/bin/kubectl
+    state: link
+
+- name: copy minikube service
+  ansible.builtin.template:
+    src: minikube.service.j2
+    dest: /etc/systemd/system/minikube.service
+    mode: 0644
+
+- name: enable minikube service
+  ansible.builtin.systemd:
+    name: minikube
+    daemon_reload: yes
+    state: started
+    enabled: yes

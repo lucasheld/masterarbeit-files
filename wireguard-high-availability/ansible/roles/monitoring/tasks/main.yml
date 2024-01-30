@@ -1,0 +1,42 @@
+---
+- name: copy check_other_servers.py
+  ansible.builtin.copy:
+    src: check_other_servers.py
+    dest: /root/check_other_servers.py
+    mode: 0744
+
+- name: install setuptools and pip
+  ansible.builtin.apt:
+    name:
+      - python3-setuptools
+      - python3-pip
+    state: latest
+    update_cache: yes
+
+- name: install hcloud python package
+  ansible.builtin.pip:
+    name: hcloud==1.16.0
+
+- name: copy health_check.py
+  ansible.builtin.copy:
+    src: health_check.py
+    dest: /root/health_check.py
+    mode: 0744
+
+- name: copy health_check service
+  ansible.builtin.template:
+    src: health_check.service.j2
+    dest: /etc/systemd/system/health_check.service
+    mode: 0644
+
+- name: start and enable health_check service
+  ansible.builtin.systemd:
+    name: health_check
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+- name: create check_other_servers cronjob
+  ansible.builtin.cron:
+    name: check_other_servers
+    job: sleep $(( RANDOM \% 60 )) && /root/check_other_servers.py --token "{{ hetzner.api_token }}" --floating-ipv4 "{{ hetzner.floating_ipv4 }}" --floating-ipv6 "{{ hetzner.floating_ipv6 | default('') }}" --server-ips {{ hostvars[inventory_hostname]['groups']['servers'] | join(' ') }}

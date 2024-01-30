@@ -1,0 +1,8 @@
+---
+- name: copy floating ip interface config
+  ansible.builtin.template:
+    src: 60-floating-ip.cfg.j2
+    dest: /etc/network/interfaces.d/60-floating-ip.cfg
+    mode: 0644
+  notify:
+    - restart networking

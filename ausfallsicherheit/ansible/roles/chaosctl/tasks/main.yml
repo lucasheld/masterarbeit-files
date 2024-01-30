@@ -1,0 +1,6 @@
+---
+- name: install chaosctl
+  get_url:
+    url: "https://mirrors.chaos-mesh.org/latest/chaosctl"
+    dest: /usr/local/bin/chaosctl
+    mode: "+x"

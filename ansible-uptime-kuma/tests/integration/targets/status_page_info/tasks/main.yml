@@ -1,0 +1,7 @@
+- name: get all status_pages
+  lucasheld.uptime_kuma.status_page_info:
+    api_url: http://127.0.0.1:3001
+    api_username: admin
+    api_password: secret123
+    api_timeout: 1
+    api_wait_events: 0.01

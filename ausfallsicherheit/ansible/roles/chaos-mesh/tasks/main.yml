@@ -1,0 +1,39 @@
+---
+- name: Add chaos-mesh repo
+  kubernetes.core.helm_repository:
+    name: chaos-mesh
+    repo_url: "https://charts.chaos-mesh.org"
+
+- name: Create chaos-mesh namespace
+  ansible.builtin.shell: "kubectl create ns chaos-mesh"
+  ignore_errors: yes
+
+- name: Deploy latest version of chaos-mesh
+  kubernetes.core.helm:
+    name: chaos-mesh
+    chart_ref: chaos-mesh/chaos-mesh
+    release_namespace: chaos-mesh
+    set_values:
+      - value: dashboard.securityMode=false
+      - value: controllerManager.ChaosdSecurityMode=false
+
+- name: Wait for chaos-mesh start
+  ansible.builtin.shell: "kubectl wait pod --all --for=condition=Ready --namespace=chaos-mesh --timeout=600s"
+
+- name: copy chaos-mesh-port-forward service
+  ansible.builtin.template:
+    src: chaos-mesh-port-forward.service.j2
+    dest: /etc/systemd/system/chaos-mesh-port-forward.service
+    mode: 0644
+  notify:
+    - restart chaos-mesh-port-forward
+
+- name: start and enable chaos-mesh-port-forward service
+  ansible.builtin.systemd:
+    name: chaos-mesh-port-forward
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+# flush handlers to start triggered handlers before next task is executed
+- meta: flush_handlers

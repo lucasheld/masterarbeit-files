@@ -1,0 +1,21 @@
+target  prot  opt  source       destination
+ACCEPT  tcp   --   10.0.0.4/32  10.0.0.2/32  dports: 80
+ACCEPT  tcp   --   10.0.0.4/32  10.0.0.2/32  dports: 443
+ACCEPT  tcp   --   10.0.0.4/32  10.0.0.3/32  dports: 53
+ACCEPT  udp   --   10.0.0.4/32  10.0.0.3/32  dports: 53
+ACCEPT  tcp   --   10.0.0.5/32  10.0.0.2/32  dports: 80
+ACCEPT  tcp   --   10.0.0.5/32  10.0.0.2/32  dports: 443
+ACCEPT  icmp  --   10.0.0.4/32  10.0.0.0/24
+DROP    all   --   10.0.0.0/24  0.0.0.0/0
+ACCEPT  all   --   127.0.0.0/8  0.0.0.0/0
+ACCEPT  icmp  --   0.0.0.0/0    0.0.0.0/0
+ACCEPT  tcp   --   0.0.0.0/0    0.0.0.0/0  dports: 22
+ACCEPT  udp   --   0.0.0.0/0    0.0.0.0/0  dports: 51820
+ACCEPT  tcp   --   0.0.0.0/0    0.0.0.0/0  dports: 80
+DROP    udp   --   0.0.0.0/0    0.0.0.0/0  dports: 137
+DROP    udp   --   0.0.0.0/0    0.0.0.0/0  dports: 138
+DROP    tcp   --   0.0.0.0/0    0.0.0.0/0  dports: 139
+DROP    tcp   --   0.0.0.0/0    0.0.0.0/0  dports: 445
+DROP    udp   --   0.0.0.0/0    0.0.0.0/0  dports: 67
+DROP    udp   --   0.0.0.0/0    0.0.0.0/0  dports: 68
+DROP    all   --   0.0.0.0/0    0.0.0.0/0

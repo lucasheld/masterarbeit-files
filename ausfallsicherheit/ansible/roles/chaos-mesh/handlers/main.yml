@@ -1,0 +1,5 @@
+---
+- name: restart chaos-mesh-port-forward
+  ansible.builtin.systemd:
+    name: chaos-mesh-port-forward.service
+    state: restarted

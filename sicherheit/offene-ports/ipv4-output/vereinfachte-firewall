@@ -1,0 +1,2 @@
+target  prot  opt  source     destination
+ACCEPT  all   --   0.0.0.0/0  0.0.0.0/0

@@ -1,0 +1,47 @@
+---
+- name: get floating ip by name
+  hosts: localhost
+  connection: local 
+  tasks:
+    - include_role:
+        name: floating-ip
+        tasks_from: get-ip
+
+- hosts: servers
+  become: yes
+  tasks:
+    - ansible.builtin.set_fact:
+        floating_ipv4: "{{ hostvars['localhost'].floating_ipv4 }}"
+    
+    - ansible.builtin.set_fact:
+        floating_ipv6: "{{ hostvars['localhost'].floating_ipv6 }}"
+      when: hetzner.floating_ipv6 is defined
+
+    - include_role:
+        name: firewall
+    
+    - include_role:
+        name: floating-ip
+    
+    - include_role:
+        name: docker
+
+    - include_role:
+        name: monitoring
+
+    - set_fact:
+        wireguard: "{{ wireguard | combine({ \"peers\": wireguard.peers + generated_peers }) }}"
+
+    - include_role:
+        name: wireguard
+        tasks_from: generate_firewall_rules
+
+    - include_role:
+        name: wireguard
+
+    - include_role:
+        name: uptime-kuma
+
+    - include_role:
+        name: uptime-kuma
+        tasks_from: configure

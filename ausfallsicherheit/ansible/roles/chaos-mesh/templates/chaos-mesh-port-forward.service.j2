@@ -1,0 +1,13 @@
+[Unit]
+Description=chaos-mesh port forward
+Requires=minikube.service
+After=minikube.service
+
+[Service]
+Type=simple
+User=root
+Restart=on-failure
+ExecStart=kubectl port-forward --address 0.0.0.0 -n chaos-mesh svc/chaos-dashboard 2333:2333
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=chaosd
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/chaosd-latest-linux-amd64/chaosd server --https-port 31768 --CA=/etc/chaosd/pki/ca.crt --cert=/etc/chaosd/pki/chaosd.crt --key=/etc/chaosd/pki/chaosd.key
+
+[Install]
+WantedBy=multi-user.target

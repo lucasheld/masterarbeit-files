@@ -1,0 +1,1 @@
+./fffuu6 --ipassmt ip6assmt --chain OUTPUT ip6tables-save

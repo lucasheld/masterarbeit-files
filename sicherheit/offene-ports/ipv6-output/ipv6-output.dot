@@ -1,0 +1,8 @@
+strict digraph "" {
+	node [label="\N"];
+    nodesep=0.3;
+    
+	a [label=<{:: .. ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff}>];
+	
+    a -> a [label="all"];
+}

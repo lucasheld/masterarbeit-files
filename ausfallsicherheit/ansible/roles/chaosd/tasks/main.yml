@@ -1,0 +1,63 @@
+---
+- name: install curl, ipset, stress-ng
+  ansible.builtin.apt:
+    name:
+      - curl
+      - ipset
+      - stress-ng
+    state: latest
+    update_cache: yes
+
+- name: install chaosd
+  ansible.builtin.unarchive:
+    src: https://mirrors.chaos-mesh.org/chaosd-latest-linux-amd64.tar.gz
+    dest: /usr/local
+    remote_src: yes
+
+- name: copy chaosd service
+  ansible.builtin.template:
+    src: chaosd.service.j2
+    dest: /etc/systemd/system/chaosd.service
+    mode: 0644
+
+# restart to load chaos-mesh certs, this is not idempotent
+- name: restart and enable chaosd service
+  ansible.builtin.systemd:
+    name: chaosd
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+
+- name: ufw allow chaosd
+  community.general.ufw:
+    rule: allow
+    port: 31768
+
+
+# fix conflict between ufw and chaosd
+
+- name: create directory /etc/iptables
+  file:
+    path: /etc/iptables
+    state: directory
+    mode: "u=rx,g=rx,o=rwx"
+    recurse: yes
+
+- name: copy custom-iptables-rules.sh
+  ansible.builtin.copy:
+    src: custom-iptables-rules.sh
+    dest: /etc/iptables/custom-iptables-rules.sh
+    mode: a+x
+
+- name: copy custom-iptables.service
+  ansible.builtin.copy:
+    src: custom-iptables.service
+    dest: /etc/systemd/system/custom-iptables.service
+    mode: 0644
+
+- name: start and enable custom-iptables service
+  ansible.builtin.systemd:
+    name: custom-iptables
+    daemon_reload: yes
+    state: started
+    enabled: yes

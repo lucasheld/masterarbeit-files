@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: network-delay-health-check-port-to-other-server-inactive-1695151316
+  namespace: default
+spec:
+  action: network-delay
+  address:
+  - https://49.12.207.65:31768
+  duration: 10m
+  mode: all
+  network-delay:
+    device: eth0
+    egress-port: '80'
+    ip-address: 128.140.41.88
+    ip-protocol: tcp
+    latency: 1s
+  selector: {}

@@ -1,0 +1,8 @@
+generated_peers:
+  {% for peer in peers -%}
+  - public_key: {{ peer.public_key }}
+    allowed_ips:
+    {%- for address in peer.address %}
+      - {{ address }}
+    {%- endfor %}
+  {% endfor %}

@@ -1,0 +1,9 @@
+---
+- name: copy grafana dir
+  ansible.builtin.copy:
+    src: grafana
+    dest: "{{ ansible_env.HOME }}"
+    mode: 0644
+
+- name: start grafana
+  ansible.builtin.shell: "docker compose -f {{ ansible_env.HOME }}/grafana/docker-compose.yml up -d"
